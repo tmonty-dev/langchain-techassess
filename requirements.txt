@@ -1,0 +1,4 @@
+langchain
+pydantic
+openai
+python-dotenv
