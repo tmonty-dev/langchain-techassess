@@ -1,19 +1,24 @@
 from pydantic import BaseModel, Field
 from typing import Literal
 
-# --- Building blocks ---
+# --- Building blocks of tech assessment execution and deliverable ---
 
+## Main pieces of deliverble
+
+### many-to-one with 'Topic'
 class QuestionResponse(BaseModel):
     question_id: str
     question_text: str
     answer: str = Field(description="Synthesized bullet-point answer from source docs")
     source_chunks: list[str] = Field(description="Verbatim excerpts used to form answer")
 
+### one-to-one with 'Topic'
 class Risk(BaseModel):
     description: str
     supporting_quote: str        # verbatim, with source label
     source_document: str
 
+### many-to-one with 'Topic'
 class Recommendation(BaseModel):
     title: str
     description: str
@@ -23,17 +28,12 @@ class Recommendation(BaseModel):
     cost_type: Literal["Labor", "Hardware", "Software", "One-Time", "Ongoing", "Mixed"]
     next_steps: list[str]
     benefits: list[str]
-    addresses_risks: list[str]   # risk descriptions this rec resolves
+    addresses_risks: list[str]   
 
-# --- Per Topic output (maps to current state + rec slides) ---
-class TopicReport(BaseModel):
-    Topic_id: str
-    Topic_name: str
-    question_responses: list[QuestionResponse]
-    risks: list[Risk]
-    recommendations: list[Recommendation]
 
-# --- Year 1 roadmap (aggregated from Y1 recs across all categories) ---
+
+# --- Final report schema ---
+### Leading recommendation slide, most essential recommendations across all topics
 class RoadmapItem(BaseModel):
     recommendation_title: str
     Topic: str
@@ -44,7 +44,15 @@ class RoadmapItem(BaseModel):
     q3: bool
     q4: bool
 
-# --- Final report schema ---
+### Data associated with each topic, current state assessment + recommendations
+class TopicReport(BaseModel):
+    Topic_id: str
+    Topic_name: str
+    question_responses: list[QuestionResponse]
+    risks: list[Risk]
+    recommendations: list[Recommendation]
+
+### Aggregate of RoadmapItem + all TopicReports
 class AssessmentReport(BaseModel):
     engagement_id: str
     organization_name: str
